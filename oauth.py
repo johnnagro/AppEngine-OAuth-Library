@@ -66,6 +66,7 @@ MYSPACE = "myspace"
 DROPBOX = "dropbox"
 LINKEDIN = "linkedin"
 YAMMER = "yammer"
+SALESFORCE = "salesforce"
 
 
 class OAuthException(Exception):
@@ -631,3 +632,26 @@ class YammerClient(OAuthClient):
     user_info["picture"] = data["mugshot_url"]
     user_info["name"] = data["full_name"]
     return user_info
+
+class SalesforceClient(OAuthClient):
+  """Salesfore Client.
+
+  """
+
+  def __init__(self, consumer_key, consumer_secret, callback_url):
+    """Constructor."""
+
+    OAuthClient.__init__(self,
+        SALESFORCE,
+        consumer_key,
+        consumer_secret,
+        "https://login.salesforce.com/services/oauth2/token",
+        "https://login.salesforce.com/services/oauth2/token",
+        callback_url)
+
+  def get_authorization_url(self):
+    """Get Authorization URL."""
+
+    token = self._get_auth_token()
+    return ("https://login.salesforce.com/services/oauth2/authorize?oauth_token=%s"
+            "&oauth_callback=%s" % (token, urlquote(self.callback_url)))
